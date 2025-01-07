@@ -27,10 +27,13 @@ COPY . /var/www/html
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Set permissions
+# Set permissions for Laravel directories
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
+
+# Update Apache configuration to use Laravel's public folder
+RUN sed -i 's|/var/www/html|/var/www/html/public|' /etc/apache2/sites-available/000-default.conf
 
 # Expose port 80
 EXPOSE 80
