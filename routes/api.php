@@ -19,7 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('loyalty-cards', LoyaltyCardsController::class);
 });
 
-// In app/Http/Middleware/HandleCors.php or routes/api.php
-return $next($request)->header('Access-Control-Allow-Origin', '*')
-                      ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
-                      ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+// // In app/Http/Middleware/HandleCors.php or routes/api.php
+// return $next($request)->header('Access-Control-Allow-Origin', '*')
+//                       ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE')
+//                       ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
