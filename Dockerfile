@@ -27,6 +27,9 @@ COPY . /var/www/html
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
+# Install dependencies with Composer
+RUN composer install --no-dev --optimize-autoloader
+
 # Set permissions for Laravel directories
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
