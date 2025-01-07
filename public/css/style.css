@@ -1,0 +1,88 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.main_header {
+    background-color: #2b4b2f;
+    color: #d6af68;
+}
+
+.main_header_text{
+    text-align: center;
+    padding: 10px;
+    font-size: 50px;
+    font-weight: bold;
+}
+
+html, body {
+    height: 100%; /* Ensure the body and html take up full screen height */
+    margin: 0; /* Remove any default margin */
+}
+
+#main_container {
+    display: flex; /* Turn the container into a flex container */
+    flex-direction: column; /* Stack child elements vertically */
+    justify-content: center;  /* Center child elements vertically */
+    align-items: center;  /* Center child elements horizontally */
+    height: 100%; /* Take up full screen height */
+    text-align: center; /* Center text inside each child element */
+}
+
+.container {
+    margin: 10px; /* Space between each container (button) */
+}
+
+button {
+    padding: 20px 40px; /* Increased padding for larger buttons */
+    font-size: 18px; /* Larger font size */
+    cursor: pointer; /* Show pointer cursor on hover */
+    background-color: #2b4b2f; /* Background color */
+    color: #d6af68; /* Text color */
+    width: 500px; /* Fixed width */
+    height: 100px;
+    border-radius: 25px; /* Rounded corners */
+    border: none; /* Remove default border */
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    background-color: #3c703c; /* Darker background color when hovered */
+}
+
+.back_button {
+    padding: 10px 20px; /* Smaller padding for the back button */
+    font-size: 14px; /* Smaller font size */
+    width: auto; /* Auto width */
+    height: auto; /* Auto height */
+    border-radius: 15px; /* Slightly rounded corners */
+    border: none; /* Remove default border */
+    background-color: #2b4b2f; /* Match background color */
+    color: #d6af68; /* Match text color */
+    position: absolute; /* Floating the button */
+    top: 10px; /* Adjust distance from the top */
+    left: 10px; /* Adjust distance from the right */
+    cursor: pointer;
+}
+
+.back_button:hover {
+    background-color: #3c703c; /* Darker background color when hovered */
+}
+
+.submit-button {
+    /* This will apply the Bootstrap's default btn styles */
+    width: auto; /* Let the button size adjust based on content */
+    height: auto; /* Let the button height adjust */
+    padding: 10px 20px; /* Apply padding as per Bootstrap */
+    font-size: 16px; /* Standard font size */
+    border-radius: 4px; /* Standard Bootstrap rounded corners */
+    background-color: #007bff; /* Use Bootstrap's primary button color */
+    border: none; /* No border */
+}
+
+.submit-button:hover {
+    background-color: #0056b3; /* Standard hover effect for Bootstrap buttons */
+}
