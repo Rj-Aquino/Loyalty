@@ -52,6 +52,7 @@
                     <li>
                         <strong>Transaction ID:</strong> ${transaction.TransactionID} <br>
                         <strong>Order ID:</strong> ${transaction.OrderID} <br>
+                         <strong>User ID:</strong> ${transaction.UserID} <br>
                         <strong>Total Points Used:</strong> ${transaction.TotalPointsUsed} <br>
                         <strong>Points Earned:</strong> ${transaction.PointsEarned} <br>
                         <strong>Transaction Date:</strong> ${transaction.TransactionDate} <br>
