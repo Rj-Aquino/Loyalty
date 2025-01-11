@@ -29,7 +29,7 @@
 
             try {
                 // Pass the dynamically entered Loyalty Card ID to the apiHandler function
-                const transactions = await apiHandler('fetchTransactions', loyaltyCardId);
+                const transactions = await apiHandler('fetchTransactionsByLoyaltyCard', loyaltyCardId);
                 renderTransactions(transactions);
             } catch (error) {
                 displayError(error);
