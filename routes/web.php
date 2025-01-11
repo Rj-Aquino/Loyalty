@@ -18,3 +18,7 @@ Route::get('/viewpoints', function () {
 
 Route::post('/apply', [LoyaltyCardsController::class, 'addLoyaltyCard']);
 Route::post('/viewpoints', [LoyaltyCardsController::class, 'viewPoints']);
+
+Route::get('/transactions', function () {
+    return view('transactions');
+});
