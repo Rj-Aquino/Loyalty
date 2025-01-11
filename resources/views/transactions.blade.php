@@ -4,23 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Get Loyalty Card Details</title>
+    <title>Get Transactions by Loyalty Card</title>
     
     <!-- Include the JS file from public/js -->
     <script src="js/apiHandler.js"></script> <!-- Corrected path for asset -->
 </head>
 <body>
-    <h1>Loyalty Card Details</h1>
+    <h1>Transaction List</h1>
 
     <label for="loyalty-card-id">Enter Loyalty Card ID:</label>
     <input type="number" id="loyalty-card-id" placeholder="Enter Loyalty Card ID" required>
-    <button onclick="getLoyaltyCard()">Fetch Loyalty Card</button>
+    <button onclick="getTransactions()">Fetch Transactions</button>
 
-    <div id="loyalty-card-details">Loading loyalty card...</div>
+    <div id="transaction-list">Loading transactions...</div>
     <div id="error-message"></div>
 
     <script>
-        async function getLoyaltyCard() {
+        async function getTransactions() {
             const loyaltyCardId = document.getElementById('loyalty-card-id').value;
             if (!loyaltyCardId) {
                 displayError('Please enter a Loyalty Card ID.');
@@ -29,31 +29,37 @@
 
             try {
                 // Pass the dynamically entered Loyalty Card ID to the apiHandler function
-                const loyaltyCard = await apiHandler('fetchLoyaltyCard', loyaltyCardId);
-                renderLoyaltyCard(loyaltyCard);
+                const transactions = await apiHandler('fetchTransactions', loyaltyCardId);
+                renderTransactions(transactions);
             } catch (error) {
                 displayError(error);
             }
         }
 
-        // Function to render loyalty card data
-        function renderLoyaltyCard(loyaltyCard) {
-            const loyaltyCardDetails = document.getElementById('loyalty-card-details');
-            loyaltyCardDetails.innerHTML = ''; // Clear previous content
+        // Function to render the transaction list
+        function renderTransactions(transactions) {
+            const transactionList = document.getElementById('transaction-list');
+            transactionList.innerHTML = ''; // Clear previous content
 
-            if (!loyaltyCard || !loyaltyCard.LoyaltyCardID) {
-                loyaltyCardDetails.innerHTML = '<p>No loyalty card found with that ID.</p>';
+            if (!transactions || transactions.length === 0) {
+                transactionList.innerHTML = '<p>No transactions found for this Loyalty Card ID.</p>';
                 return;
             }
 
-            loyaltyCardDetails.innerHTML = `
-                <strong>Loyalty Card ID:</strong> ${loyaltyCard.LoyaltyCardID} <br>
-                <strong>Name:</strong> ${loyaltyCard.FirstName} ${loyaltyCard.MiddleInitial ? loyaltyCard.MiddleInitial + '.' : ''} ${loyaltyCard.LastName} ${loyaltyCard.Suffix ? loyaltyCard.Suffix : ''} <br>
-                <strong>Contact Number:</strong> ${loyaltyCard.ContactNo} <br>
-                <strong>Points:</strong> ${loyaltyCard.Points} <br>
-                <strong>Created At:</strong> ${loyaltyCard.created_at} <br>
-                <strong>Updated At:</strong> ${loyaltyCard.updated_at}
-            `;
+            let html = '<ul>';
+            transactions.forEach(transaction => {
+                html += `
+                    <li>
+                        <strong>Transaction ID:</strong> ${transaction.TransactionID} <br>
+                        <strong>Order ID:</strong> ${transaction.OrderID} <br>
+                        <strong>Total Points Used:</strong> ${transaction.TotalPointsUsed} <br>
+                        <strong>Points Earned:</strong> ${transaction.PointsEarned} <br>
+                        <strong>Transaction Date:</strong> ${transaction.TransactionDate} <br>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            transactionList.innerHTML = html;
         }
 
         // Function to handle displaying error messages
