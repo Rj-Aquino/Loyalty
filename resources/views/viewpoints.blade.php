@@ -101,9 +101,15 @@
         {{-- Points Display Section --}}
         <div class="row mt-4">
             <div class="col-12">
-                <div class="alert alert-info" role="alert" id="pointsDisplay">
-                    No points data available. Please scan or enter a loyalty card.
-                </div>
+                @if (!empty($points))
+                    <div class="alert alert-success" role="alert" id="pointsDisplay">
+                        Points Available: {{ $points }}
+                    </div>
+                @else
+                    <div class="alert alert-warning" role="alert" id="pointsDisplay">
+                        No points data available. Please scan or enter a loyalty card.
+                    </div>
+                @endif
             </div>
         </div>
 

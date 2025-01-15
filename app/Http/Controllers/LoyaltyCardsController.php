@@ -121,7 +121,7 @@ class LoyaltyCardsController extends Controller
 
             // Check if the transactions are empty
             if (empty($transactions)) {
-                return back()->with('error', 'No transactions found for this loyalty card.');
+                return back()->with('error', 'No transactions found for this loyalty card.')->with('points', null)->with('transactions', []);
             }
 
             // Pass data to the view
@@ -132,16 +132,21 @@ class LoyaltyCardsController extends Controller
             ]);
         } else {
             // Show error if member not found or information mismatch
-            return back()->with('points', null)->with('error', 'Member not found or information does not match.');
+            // If the member is not found, reset everything
+            return back()->with('error', 'Member not found or information does not match.')->with('points', null)->with('transactions', []);
         }
     }
 
 
     // Function to fetch transactions from the API
-    private function fetchTransactionsFromApi($loyaltycardID)
+    private function fetchTransactionsFromApi($loyaltycardID, $page = 1, $perPage = 2)
     {
+        // Fetch the transactions with pagination parameters
         $response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->getApiToken()])
-                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltycardID}");
+                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltycardID}", [
+                            'page' => $page,
+                            'per_page' => $perPage
+                        ]);
 
         if ($response->successful()) {
             return $response->json();
@@ -149,6 +154,7 @@ class LoyaltyCardsController extends Controller
 
         return [];
     }
+
 
     // Method to get the API token
     private function getApiToken()
