@@ -6,6 +6,8 @@ use App\Models\LoyaltyCard;
 use Illuminate\Http\Request;
 use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
 use Milon\Barcode\Facades\DNS2DFacade as DNS2D;
+use Illuminate\Support\Facades\Http;
+
 
 class LoyaltyCardsController extends Controller
 {
@@ -86,7 +88,7 @@ class LoyaltyCardsController extends Controller
         if ($useManualInput) {
             // Validate the manual input data
             $validatedData = $request->validate([
-                'manualLoyaltyCardID' => ['required', 'integer', 'exists:LoyaltyCards,LoyaltyCardID'],
+                'manualLoyaltyCardID' => ['required', 'integer'],
                 'manualFirstname' => ['required', 'string', 'max:50'],
                 'manualLastname' => ['required', 'string', 'max:50'],
             ]);
@@ -97,7 +99,7 @@ class LoyaltyCardsController extends Controller
         } else {
             // Validate the scanned data
             $validatedData = $request->validate([
-                'loyaltycardID' => ['required', 'integer', 'exists:LoyaltyCards,LoyaltyCardID'],
+                'loyaltycardID' => ['required', 'integer'],
                 'firstname' => ['required', 'string', 'max:50'],
                 'lastname' => ['required', 'string', 'max:50'],
             ]);
@@ -109,19 +111,52 @@ class LoyaltyCardsController extends Controller
 
         // Retrieve member by LoyaltyCardID with case-insensitive matching
         $loyaltycard = LoyaltyCard::where('LoyaltyCardID', $loyaltycardID)
-                        ->whereRaw('LOWER(FirstName) = ?', [strtolower($firstname)])
-                        ->whereRaw('LOWER(LastName) = ?', [strtolower($lastname)])
-                        ->first();
+                            ->whereRaw('LOWER(FirstName) = ?', [strtolower($firstname)])
+                            ->whereRaw('LOWER(LastName) = ?', [strtolower($lastname)])
+                            ->first();
 
-        // Check if the member exists and match the data
         if ($loyaltycard) {
-            // Return success with points
-            return back()->with('success', "Member Found! Points: {$loyaltycard->Points}");
+            // Fetch transactions from API using the LoyaltyCardID
+            $transactions = $this->fetchTransactionsFromApi($loyaltycardID);
+
+            // Check if the transactions are empty
+            if (empty($transactions)) {
+                return back()->with('error', 'No transactions found for this loyalty card.');
+            }
+
+            // Pass data to the view
+            return view('viewpoints', [
+                'points' => $loyaltycard->Points,
+                'memberName' => "{$firstname} {$lastname}",
+                'transactions' => $transactions
+            ]);
         } else {
-            // Return error if member not found or data doesn't match
-            return back()->with('error', 'Member not found or information does not match.');
+            // Show error if member not found or information mismatch
+            return back()->with('points', null)->with('error', 'Member not found or information does not match.');
         }
     }
+
+
+    // Function to fetch transactions from the API
+    private function fetchTransactionsFromApi($loyaltycardID)
+    {
+        $response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->getApiToken()])
+                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltycardID}");
+
+        if ($response->successful()) {
+            return $response->json();
+        }
+
+        return [];
+    }
+
+    // Method to get the API token
+    private function getApiToken()
+    {
+        $response = Http::post('https://pos-production-c2c1.up.railway.app/api/generate-token');
+        return $response->json()['token'] ?? '';
+    }
+
 
 
 

@@ -46,8 +46,10 @@
     <div class="container mt-4">
         <div class="row">
             {{-- Camera and Barcode Scanner --}}
-            <div id="scanner-container">
-                <div id="video-preview"></div> <!-- Quagga will insert the video feed here -->
+            <div class="col-md-6">
+                <div id="scanner-container">
+                    <div id="video-preview"></div>
+                </div>
             </div>
 
             {{-- Form to View Loyalty Card Points --}}
@@ -95,43 +97,77 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    {{-- Success Modal --}}
-    @if (session('success'))
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Success</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    {{ session('success') }}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        {{-- Points Display Section --}}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="alert alert-info" role="alert" id="pointsDisplay">
+                    No points data available. Please scan or enter a loyalty card.
                 </div>
             </div>
         </div>
-    </div>
-    @endif
 
-    {{-- Error Alert --}}
-    @if (session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
+        {{-- Error Alert --}}
+        @if (session('error'))
+            <div class="alert alert-danger mt-3">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        {{-- Table Section for Transactions --}}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Loyalty Card Transactions
+                    </div>
+                    <div class="card-body">
+                        @if(!empty($transactions) && count($transactions) > 0)
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Transaction ID</th>
+                                        <th scope="col">Order ID</th>
+                                        <th scope="col">User ID</th>
+                                        <th scope="col">Total Points Used</th>
+                                        <th scope="col">Points Earned</th>
+                                        <th scope="col">Transaction Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($transactions as $transaction)
+                                        <tr>
+                                            <td>{{ $transaction['TransactionID'] }}</td>
+                                            <td>{{ $transaction['OrderID'] }}</td>
+                                            <td>{{ $transaction['UserID'] }}</td>
+                                            <td>{{ $transaction['TotalPointsUsed'] }}</td>
+                                            <td>{{ $transaction['PointsEarned'] }}</td>
+                                            <td>{{ $transaction['TransactionDate'] }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <p>No transactions found for this loyalty card.</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
-    @endif
+
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Show the success modal if there's a success message
-        @if (session('success'))
-        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        successModal.show();
-        @endif
+        // Display points if available
+        const pointsData = "{{ session('points') ?? '' }}";
+        const pointsDisplay = document.getElementById('pointsDisplay');
+
+        if (pointsData) {
+            pointsDisplay.classList.replace('alert-info', 'alert-success');
+            pointsDisplay.innerText = `Points Available: ${pointsData}`;
+        }
 
         // Initialize QuaggaJS
         Quagga.init({
