@@ -121,8 +121,11 @@ class LoyaltyCardsController extends Controller
 
             // Check if the transactions are empty
             if (empty($transactions)) {
-                return back()->with('error', 'No transactions found for this loyalty card.')->with('points', null)->with('transactions', []);
-            }
+                return back()->with('error', 'No transactions found for this loyalty card.')
+                            ->with('points', $loyaltycard->Points)
+                            ->with('memberName', "{$firstname} {$lastname}")
+                            ->with('transactions', []);
+}
 
             // Pass data to the view
             return view('viewpoints', [
