@@ -18,45 +18,45 @@
         <h1 class="main_header_text">Dipensa Teknolohiya Grocery</h1>
     </div>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="card" style="width: 30rem;">
+            <div class="card-header text-center">
                 Add New Loyalty Card
             </div>
             <form action="/apply" method="post">
                 @csrf
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="firstname" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter First Name" value="{{ old('firstname') }}">
+                        <label for="firstname" class="form-label">First Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="firstname" name="firstname" placeholder="Enter First Name" value="{{ old('firstname') }}" maxlength="50" required>
                         @error('firstname')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="lastname" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Last Name" value="{{ old('lastname') }}">
+                        <label for="lastname" class="form-label">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="lastname" name="lastname" placeholder="Enter Last Name" value="{{ old('lastname') }}" maxlength="50" required>
                         @error('lastname')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-3">
                         <label for="middleinitial" class="form-label">Middle Initial (Optional)</label>
-                        <input type="text" class="form-control" id="middleinitial" name="middleinitial" placeholder="Enter Middle Initial" value="{{ old('middleinitial') }}">
+                        <input type="text" class="form-control" id="middleinitial" name="middleinitial" placeholder="Enter Middle Initial" value="{{ old('middleinitial') }}" maxlength="1" pattern="[A-Za-z]">
                         @error('middleinitial')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-3">
                         <label for="suffix" class="form-label">Suffix (Optional)</label>
-                        <input type="text" class="form-control" id="suffix" name="suffix" placeholder="Enter Suffix" value="{{ old('suffix') }}">
+                        <input type="text" class="form-control" id="suffix" name="suffix" placeholder="Enter Suffix" value="{{ old('suffix') }}" maxlength="5">
                         @error('suffix')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="contact_number" class="form-label">Contact Number</label>
-                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter Contact Number" value="{{ old('contact_number') }}">
+                        <label for="contact_number" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter Contact Number" value="{{ old('contact_number') }}" pattern="^09\d{9}$" required>
                         @error('contact_number')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
