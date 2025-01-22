@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\LoyaltyCard;
 use Illuminate\Http\Request;
 use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
-use Milon\Barcode\Facades\DNS2DFacade as DNS2D;
 use Illuminate\Support\Facades\Http;
 
 class LoyaltyCardsController extends Controller
@@ -22,18 +21,22 @@ class LoyaltyCardsController extends Controller
             'contact_number' => ['required', 'max:20'],
         ]);
 
+        // Generate UniqueIdentifier manually
+        $uniqueIdentifier = 'LID-' . strtoupper(str_random(6));
+
         // Create the new member using the validated data
         try {
-            $newLoyaltyCard = LoyaltyCard::create([
+            $newloyaltycard = LoyaltyCard::create([
                 'FirstName' => $incomingFields['firstname'],
                 'LastName' => $incomingFields['lastname'],
                 'MiddleInitial' => $incomingFields['middleinitial'] ?? null,
                 'Suffix' => $incomingFields['suffix'] ?? null,
                 'ContactNo' => $incomingFields['contact_number'],
+                'UniqueIdentifier' => $uniqueIdentifier, // Use the generated UniqueIdentifier
             ]);
 
             // Prepare the barcode content
-            $barcodeContent = strtoupper("{$newLoyaltyCard->LoyaltyCardID}-{$newLoyaltyCard->FirstName}-{$newLoyaltyCard->LastName}");
+            $barcodeContent = strtoupper("{$newloyaltycard->LoyaltyCardID}-{$newloyaltycard->FirstName}-{$newloyaltycard->LastName}");
             $barcodeContent = preg_replace('/[^A-Z0-9\-]/', '', $barcodeContent); // Ensure it only contains valid characters for C39
 
             // Generate the barcode with a transparent background
@@ -55,7 +58,7 @@ class LoyaltyCardsController extends Controller
             imagecopy($backgroundImage, $barcodeImage, 0, 0, 0, 0, $width, $height);
 
             // Save the barcode image with a white background
-            $barcodePath = public_path("barcodes/{$newLoyaltyCard->LoyaltyCardID}.png");
+            $barcodePath = public_path("barcodes/{$newloyaltycard->LoyaltyCardID}.png");
             imagepng($backgroundImage, $barcodePath);  // Save the final image with a white background
 
             // Free up memory
@@ -64,8 +67,8 @@ class LoyaltyCardsController extends Controller
 
             // Success message
             return back()->with([
-                'success' => "Loyalty Card added successfully! LoyaltyCardID: {$newLoyaltyCard->LoyaltyCardID}",
-                'barcodePath' => "barcodes/{$newLoyaltyCard->LoyaltyCardID}.png",
+                'success' => "Loyalty Card added successfully! LoyaltyCardID: {$newloyaltycard->LoyaltyCardID}",
+                'barcodePath' => "barcodes/{$newloyaltycard->LoyaltyCardID}.png",
             ]);
             
         } catch (\Exception $e) {
@@ -74,12 +77,43 @@ class LoyaltyCardsController extends Controller
         }
     }
 
+    // Store function to create a new loyalty card
+    public function store(Request $request)
+    {
+        // Validate incoming data
+        $validatedData = $request->validate([
+            'FirstName' => 'required|string',
+            'LastName' => 'required|string',
+            'MiddleInitial' => 'nullable|string|max:1',
+            'Suffix' => 'nullable|string|max:10',
+            'ContactNo' => 'required|string',
+            'Points' => 'integer|min:0',
+        ]);
+
+        // Generate UniqueIdentifier manually
+        $uniqueIdentifier = 'LID-' . strtoupper(str_random(6));
+
+        // Create the loyalty card using validated data and the generated UniqueIdentifier
+        $member = LoyaltyCard::create([
+            'FirstName' => $validatedData['FirstName'],
+            'LastName' => $validatedData['LastName'],
+            'MiddleInitial' => $validatedData['MiddleInitial'] ?? null,
+            'Suffix' => $validatedData['Suffix'] ?? null,
+            'ContactNo' => $validatedData['ContactNo'],
+            'Points' => $validatedData['Points'] ?? 0,
+            'UniqueIdentifier' => $uniqueIdentifier, // Use the generated UniqueIdentifier
+        ]);
+
+        // Return the created loyalty card as a response
+        return response()->json($member, 201);
+    }
+
     // Function to fetch transactions from the API
-    private function fetchTransactionsFromApi($loyaltyCardID, $page = 1, $perPage = 2)
+    private function fetchTransactionsFromApi($loyaltycardID, $page = 1, $perPage = 2)
     {
         // Fetch the transactions with pagination parameters
         $response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->getApiToken()])
-                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltyCardID}", [
+                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltycardID}", [
                             'page' => $page,
                             'per_page' => $perPage
                         ]);
@@ -97,7 +131,7 @@ class LoyaltyCardsController extends Controller
         $response = Http::post('https://pos-production-c2c1.up.railway.app/api/generate-token');
         return $response->json()['token'] ?? '';
     }
-
+    
     public function index()
     {
         return response()->json(LoyaltyCard::all(), 200);
