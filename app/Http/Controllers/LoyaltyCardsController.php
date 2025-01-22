@@ -131,25 +131,10 @@ class LoyaltyCardsController extends Controller
         $response = Http::post('https://pos-production-c2c1.up.railway.app/api/generate-token');
         return $response->json()['token'] ?? '';
     }
-    
+
     public function index()
     {
         return response()->json(LoyaltyCard::all(), 200);
-    }
-
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'FirstName' => 'required|string',
-            'LastName' => 'required|string',
-            'MiddleInitial' => 'nullable|string|max:1',
-            'Suffix' => 'nullable|string|max:10',
-            'ContactNo' => 'required|string',
-            'Points' => 'integer|min:0',
-        ]);
-
-        $member = LoyaltyCard::create($validatedData);
-        return response()->json($member, 201);
     }
 
     public function show($id)
