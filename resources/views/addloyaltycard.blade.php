@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Add Loyalty Card</title>
     <link rel="stylesheet" href="/css/addloyalty.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
@@ -103,9 +104,16 @@
                                 <img src="{{ asset(session('barcodePath')) }}" alt="Generated Barcode" class="img-fluid">
                             </div>
                         @endif
+
+                        @if (session('barcodePath'))
+                            <a href="{{ session('barcodePath') }}" download="{{ session('uniqueIdentifier') }}.png" class="btn btn-primary mt-4">
+                                <i class="fas fa-download"></i> Download Barcode
+                            </a>
+                        @endif
+
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn-primary mt-2" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ class CreateLoyaltyCardsTable extends Migration
 {
     public function up()
     {
-        Schema::create('LoyaltyCards', function (Blueprint $table) {
+        Schema::create('loyalty_cards', function (Blueprint $table) {
             $table->id('LoyaltyCardID'); // Auto-incrementing primary key, explicitly named LoyaltyCardID
             $table->string('FirstName'); // First name column
             $table->string('LastName'); // Last name column

@@ -42,11 +42,11 @@ class LoyaltyCardsController extends Controller
             ]);
 
             // Prepare the barcode content
-            $barcodeContent = strtoupper("{$newloyaltycard->LoyaltyCardID}-{$newloyaltycard->FirstName}-{$newloyaltycard->LastName}");
-            $barcodeContent = preg_replace('/[^A-Z0-9\-]/', '', $barcodeContent); // Ensure it only contains valid characters for C39
+            $barcodeContent = strtoupper("{$uniqueIdentifier}");
+            $barcodeContent = preg_replace('/[^A-Z0-9\-]/', '', $barcodeContent); // Ensure it only contains valid characters for C128
 
             // Generate the barcode with a transparent background
-            $barcode = DNS1D::getBarcodePNG($barcodeContent, 'C39', 2, 60, [0,0,0]);
+            $barcode = DNS1D::getBarcodePNG($barcodeContent, 'C128', 2, 60, [0,0,0]);
 
             // Convert the barcode image from base64 to a PHP image resource
             $barcodeImage = imagecreatefromstring(base64_decode($barcode));
@@ -64,7 +64,7 @@ class LoyaltyCardsController extends Controller
             imagecopy($backgroundImage, $barcodeImage, 0, 0, 0, 0, $width, $height);
 
             // Save the barcode image with a white background
-            $barcodePath = public_path("barcodes/{$newloyaltycard->LoyaltyCardID}.png");
+            $barcodePath = public_path("barcodes/{$uniqueIdentifier}.png");
             imagepng($backgroundImage, $barcodePath);  // Save the final image with a white background
 
             // Free up memory
@@ -73,8 +73,10 @@ class LoyaltyCardsController extends Controller
 
             // Success message
             return back()->with([
-                'success' => "Loyalty Card added successfully! LoyaltyCardID: {$newloyaltycard->LoyaltyCardID}",
-                'barcodePath' => "barcodes/{$newloyaltycard->LoyaltyCardID}.png",
+                'success' => "Loyalty Card added successfully!",
+                'barcodePath' => "barcodes/{$uniqueIdentifier}.png",
+                'uniqueIdentifier' => $uniqueIdentifier, // Pass the uniqueIdentifier to the session
+
             ]);
             
         } catch (\Exception $e) {

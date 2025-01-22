@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\LoyaltyCard;
 
-class LoyaltyCardSeeder extends Seeder
+class LoyaltyCardsSeeder extends Seeder
 {
     public function run()
     {
