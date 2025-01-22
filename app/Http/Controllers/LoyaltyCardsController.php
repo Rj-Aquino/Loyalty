@@ -8,11 +8,8 @@ use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
 use Milon\Barcode\Facades\DNS2DFacade as DNS2D;
 use Illuminate\Support\Facades\Http;
 
-
 class LoyaltyCardsController extends Controller
 {
-    
-    // Handle the form submission and add the member
     // Handle the form submission and add the member
     public function addLoyaltyCard(Request $request)
     {
@@ -77,70 +74,6 @@ class LoyaltyCardsController extends Controller
         }
     }
 
-
-    public function viewPoints(Request $request)
-    {
-        // Check if manual input fields are being used
-        $useManualInput = $request->filled('manualLoyaltyCardID') &&
-                        $request->filled('manualFirstname') &&
-                        $request->filled('manualLastname');
-
-        if ($useManualInput) {
-            // Validate the manual input data
-            $validatedData = $request->validate([
-                'manualLoyaltyCardID' => ['required', 'integer'],
-                'manualFirstname' => ['required', 'string', 'max:50'],
-                'manualLastname' => ['required', 'string', 'max:50'],
-            ]);
-
-            $loyaltycardID = $validatedData['manualLoyaltyCardID'];
-            $firstname = $validatedData['manualFirstname'];
-            $lastname = $validatedData['manualLastname'];
-        } else {
-            // Validate the scanned data
-            $validatedData = $request->validate([
-                'loyaltycardID' => ['required', 'integer'],
-                'firstname' => ['required', 'string', 'max:50'],
-                'lastname' => ['required', 'string', 'max:50'],
-            ]);
-
-            $loyaltycardID = $validatedData['loyaltycardID'];
-            $firstname = $validatedData['firstname'];
-            $lastname = $validatedData['lastname'];
-        }
-
-        // Retrieve member by LoyaltyCardID with case-insensitive matching
-        $loyaltycard = LoyaltyCard::where('LoyaltyCardID', $loyaltycardID)
-                            ->whereRaw('LOWER(FirstName) = ?', [strtolower($firstname)])
-                            ->whereRaw('LOWER(LastName) = ?', [strtolower($lastname)])
-                            ->first();
-
-        if ($loyaltycard) {
-            // Fetch transactions from API using the LoyaltyCardID
-            $transactions = $this->fetchTransactionsFromApi($loyaltycardID);
-
-            // Check if the transactions are empty
-            if (empty($transactions)) {
-                return back()->with('error', 'No transactions found for this loyalty card.')
-                            ->with('points', $loyaltycard->Points)
-                            ->with('memberName', "{$firstname} {$lastname}")
-                            ->with('transactions', []);
-}
-
-            // Pass data to the view
-            return view('viewpoints', [
-                'points' => $loyaltycard->Points,
-                'memberName' => "{$firstname} {$lastname}",
-                'transactions' => $transactions
-            ]);
-        } else {
-            // Show error if member not found or information mismatch
-            // If the member is not found, reset everything
-            return back()->with('error', 'Member not found or information does not match.')->with('points', null)->with('transactions', []);
-        }
-    }
-
-
     // Function to fetch transactions from the API
     private function fetchTransactionsFromApi($loyaltycardID, $page = 1, $perPage = 2)
     {
@@ -158,7 +91,6 @@ class LoyaltyCardsController extends Controller
         return [];
     }
 
-
     // Method to get the API token
     private function getApiToken()
     {
@@ -166,14 +98,10 @@ class LoyaltyCardsController extends Controller
         return $response->json()['token'] ?? '';
     }
 
-
-
-
     public function index()
     {
-        return response()->json(loyaltycard::all(), 200);
+        return response()->json(LoyaltyCard::all(), 200);
     }
-
 
     public function store(Request $request)
     {
@@ -186,14 +114,13 @@ class LoyaltyCardsController extends Controller
             'Points' => 'integer|min:0',
         ]);
 
-        $member = loyaltycard::create($validatedData);
+        $member = LoyaltyCard::create($validatedData);
         return response()->json($member, 201);
     }
 
-
     public function show($id)
     {
-        $loyaltycard = loyaltycard::find($id);
+        $loyaltycard = LoyaltyCard::find($id);
 
         if (!$loyaltycard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
@@ -202,10 +129,9 @@ class LoyaltyCardsController extends Controller
         return response()->json($loyaltycard, 200);
     }
 
-
     public function update(Request $request, $id)
     {
-        $loyaltycard = loyaltycard::find($id);
+        $loyaltycard = LoyaltyCard::find($id);
 
         if (!$loyaltycard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
@@ -226,7 +152,7 @@ class LoyaltyCardsController extends Controller
 
     public function destroy($id)
     {
-        $loyaltycard = loyaltycard::find($id);
+        $loyaltycard = LoyaltyCard::find($id);
 
         if (!$loyaltycard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
@@ -235,5 +161,4 @@ class LoyaltyCardsController extends Controller
         $loyaltycard->delete();
         return response()->json(['message' => 'Loyalty Card deleted successfully'], 200);
     }
-
-    }
+}
