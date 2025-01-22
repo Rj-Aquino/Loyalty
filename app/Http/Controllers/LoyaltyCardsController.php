@@ -6,9 +6,15 @@ use App\Models\LoyaltyCard;
 use Illuminate\Http\Request;
 use Milon\Barcode\Facades\DNS1DFacade as DNS1D;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class LoyaltyCardsController extends Controller
 {
+
+    private function convertToUpper($string) {
+        return strtoupper($string);
+    }
+
     // Handle the form submission and add the member
     public function addLoyaltyCard(Request $request)
     {
@@ -22,7 +28,7 @@ class LoyaltyCardsController extends Controller
         ]);
 
         // Generate UniqueIdentifier manually
-        $uniqueIdentifier = 'LID-' . strtoupper(str_random(6));
+        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(6));
 
         // Create the new member using the validated data
         try {
@@ -91,7 +97,7 @@ class LoyaltyCardsController extends Controller
         ]);
 
         // Generate UniqueIdentifier manually
-        $uniqueIdentifier = 'LID-' . strtoupper(str_random(6));
+        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(6)); // Use Str::random()
 
         // Create the loyalty card using validated data and the generated UniqueIdentifier
         $member = LoyaltyCard::create([
