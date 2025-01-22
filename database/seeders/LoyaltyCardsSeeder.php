@@ -3,48 +3,37 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\LoyaltyCard;
 
-class LoyaltyCardsSeeder extends Seeder
+class LoyaltyCardSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-        DB::table('LoyaltyCards')->insert([
-            [
-                'FirstName' => 'John',
-                'LastName' => 'Doe',
-                'MiddleInitial' => 'A',
-                'Suffix' => null,
-                'ContactNo' => '09123456789',
-                'Points' => 10,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'FirstName' => 'Jane',
-                'LastName' => 'Smith',
-                'MiddleInitial' => 'B',
-                'Suffix' => 'Jr',
-                'ContactNo' => '09187654321',
-                'Points' => 20,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'FirstName' => 'Alice',
-                'LastName' => 'Brown',
-                'MiddleInitial' => null,
-                'Suffix' => null,
-                'ContactNo' => '09234567890',
-                'Points' => 5,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        LoyaltyCard::create([
+            'FirstName' => 'John',
+            'LastName' => 'Doe',
+            'MiddleInitial' => 'A',
+            'Suffix' => '',
+            'ContactNo' => '1234567890',
+            'Points' => 100,
+            'UniqueIdentifier' => $this->generateUniqueIdentifier(),
         ]);
+
+        LoyaltyCard::create([
+            'FirstName' => 'Jane',
+            'LastName' => 'Smith',
+            'MiddleInitial' => 'B',
+            'Suffix' => 'Jr',
+            'ContactNo' => '0987654321',
+            'Points' => 200,
+            'UniqueIdentifier' => $this->generateUniqueIdentifier(),
+        ]);
+    }
+
+    private function generateUniqueIdentifier()
+    {
+        $randomLetter = chr(rand(65, 90)); // Generate a random uppercase letter
+        $randomNumber = rand(1000, 9999); // Generate a random number
+        return 'LID-' . $randomLetter . $randomNumber;
     }
 }
