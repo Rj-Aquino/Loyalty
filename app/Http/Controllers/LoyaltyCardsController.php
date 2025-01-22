@@ -24,7 +24,7 @@ class LoyaltyCardsController extends Controller
 
         // Create the new member using the validated data
         try {
-            $newloyaltycard = LoyaltyCard::create([
+            $newLoyaltyCard = LoyaltyCard::create([
                 'FirstName' => $incomingFields['firstname'],
                 'LastName' => $incomingFields['lastname'],
                 'MiddleInitial' => $incomingFields['middleinitial'] ?? null,
@@ -33,7 +33,7 @@ class LoyaltyCardsController extends Controller
             ]);
 
             // Prepare the barcode content
-            $barcodeContent = strtoupper("{$newloyaltycard->LoyaltyCardID}-{$newloyaltycard->FirstName}-{$newloyaltycard->LastName}");
+            $barcodeContent = strtoupper("{$newLoyaltyCard->LoyaltyCardID}-{$newLoyaltyCard->FirstName}-{$newLoyaltyCard->LastName}");
             $barcodeContent = preg_replace('/[^A-Z0-9\-]/', '', $barcodeContent); // Ensure it only contains valid characters for C39
 
             // Generate the barcode with a transparent background
@@ -55,7 +55,7 @@ class LoyaltyCardsController extends Controller
             imagecopy($backgroundImage, $barcodeImage, 0, 0, 0, 0, $width, $height);
 
             // Save the barcode image with a white background
-            $barcodePath = public_path("barcodes/{$newloyaltycard->LoyaltyCardID}.png");
+            $barcodePath = public_path("barcodes/{$newLoyaltyCard->LoyaltyCardID}.png");
             imagepng($backgroundImage, $barcodePath);  // Save the final image with a white background
 
             // Free up memory
@@ -64,8 +64,8 @@ class LoyaltyCardsController extends Controller
 
             // Success message
             return back()->with([
-                'success' => "Loyalty Card added successfully! LoyaltyCardID: {$newloyaltycard->LoyaltyCardID}",
-                'barcodePath' => "barcodes/{$newloyaltycard->LoyaltyCardID}.png",
+                'success' => "Loyalty Card added successfully! LoyaltyCardID: {$newLoyaltyCard->LoyaltyCardID}",
+                'barcodePath' => "barcodes/{$newLoyaltyCard->LoyaltyCardID}.png",
             ]);
             
         } catch (\Exception $e) {
@@ -75,11 +75,11 @@ class LoyaltyCardsController extends Controller
     }
 
     // Function to fetch transactions from the API
-    private function fetchTransactionsFromApi($loyaltycardID, $page = 1, $perPage = 2)
+    private function fetchTransactionsFromApi($loyaltyCardID, $page = 1, $perPage = 2)
     {
         // Fetch the transactions with pagination parameters
         $response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->getApiToken()])
-                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltycardID}", [
+                        ->get("https://pos-production-c2c1.up.railway.app/api/transactions/loyalty/{$loyaltyCardID}", [
                             'page' => $page,
                             'per_page' => $perPage
                         ]);
@@ -120,20 +120,20 @@ class LoyaltyCardsController extends Controller
 
     public function show($id)
     {
-        $loyaltycard = LoyaltyCard::find($id);
+        $loyaltyCard = LoyaltyCard::find($id);
 
-        if (!$loyaltycard) {
+        if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
 
-        return response()->json($loyaltycard, 200);
+        return response()->json($loyaltyCard, 200);
     }
 
     public function update(Request $request, $id)
     {
-        $loyaltycard = LoyaltyCard::find($id);
+        $loyaltyCard = LoyaltyCard::find($id);
 
-        if (!$loyaltycard) {
+        if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
 
@@ -146,19 +146,19 @@ class LoyaltyCardsController extends Controller
             'Points' => 'integer|min:0',
         ]);
 
-        $loyaltycard->update($validatedData);
-        return response()->json($loyaltycard, 200);
+        $loyaltyCard->update($validatedData);
+        return response()->json($loyaltyCard, 200);
     }
 
     public function destroy($id)
     {
-        $loyaltycard = LoyaltyCard::find($id);
+        $loyaltyCard = LoyaltyCard::find($id);
 
-        if (!$loyaltycard) {
+        if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
 
-        $loyaltycard->delete();
+        $loyaltyCard->delete();
         return response()->json(['message' => 'Loyalty Card deleted successfully'], 200);
     }
 }
