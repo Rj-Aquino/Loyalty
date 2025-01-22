@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Add Loyalty Card</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/addloyalty.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
@@ -49,20 +49,31 @@
                     </div>
                     <div class="mb-3">
                         <label for="suffix" class="form-label">Suffix (Optional)</label>
-                        <input type="text" class="form-control" id="suffix" name="suffix" placeholder="Enter Suffix" value="{{ old('suffix') }}" maxlength="5">
+                        <select name="suffix" id="suffix" class="form-control">
+                            <option value="" style="color:gray;">None</option>
+                            <option value="Sr.">Sr.</option>
+                            <option value="Jr.">Jr.</option>
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                            <option value="V">V</option>
+                            <option value="VI">VI</option>
+                        </select>
                         @error('suffix')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="contact_number" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter Contact Number" value="{{ old('contact_number') }}" pattern="^09\d{9}$" required>
+                        <label for="contact_number" class="form-label mb-0">Contact Number <span class="text-danger">*</span></label><br>
+                        <small style="color:gray;">(09XXXXXXXXX)</small>
+                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter Contact Number" value="{{ old('contact_number') }}" pattern="^09\d{9}$" maxlength="11" required>
                         @error('contact_number')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary submit-button">Add Loyalty Card</button>
+                    <button type="submit" class="btn-primary submit-button">Add Loyalty Card</button>
                 </div>
             </form>
         </div>
@@ -117,6 +128,26 @@
             });
             myModal.show();
         @endif
+        
+        document.getElementById('suffix').addEventListener('change', dropdownColor);
+        dropdownColor();
+
+        function dropdownColor() {
+        var suffixDropdown = document.getElementById('suffix');
+        var options = suffixDropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === '') {
+                options[i].style.color = 'gray';
+            } else {
+                options[i].style.color = 'black';
+            }
+        }
+        if (suffixDropdown.value === '') {
+            suffixDropdown.style.color = 'gray';
+        } else {
+            suffixDropdown.style.color = 'black';
+        }
+    }
     </script>
 </body>
 </html>
