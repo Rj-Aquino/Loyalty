@@ -143,9 +143,9 @@
                                 <tbody>
                                     @foreach ($transactions as $transaction)
                                         <tr>
-                                            <td>{{ $transaction['TransactionID'] }}</td>
-                                            <td>{{ $transaction['OrderID'] }}</td>
-                                            <td>{{ $transaction['UserID'] }}</td>
+                                            <td>{{ $transaction['TransactionUniqueIdentifier'] }}</td>
+                                            <td>{{ $transaction['OrderUniqueIdentifier'] }}</td>
+                                            <td>{{ $transaction['UserUniqueIdentifier'] }}</td>
                                             <td>{{ $transaction['TotalPointsUsed'] }}</td>
                                             <td>{{ $transaction['PointsEarned'] }}</td>
                                             <td>{{ $transaction['TransactionDate'] }}</td>
