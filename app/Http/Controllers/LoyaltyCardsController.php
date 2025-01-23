@@ -28,7 +28,7 @@ class LoyaltyCardsController extends Controller
         ]);
 
         // Generate UniqueIdentifier manually
-        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(6));
+        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(5));
 
         // Create the new member using the validated data
         try {
@@ -99,7 +99,7 @@ class LoyaltyCardsController extends Controller
         ]);
 
         // Generate UniqueIdentifier manually
-        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(6)); // Use Str::random()
+        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(5)); // Use Str::random()
 
         // Create the loyalty card using validated data and the generated UniqueIdentifier
         $member = LoyaltyCard::create([
@@ -145,25 +145,28 @@ class LoyaltyCardsController extends Controller
         return response()->json(LoyaltyCard::all(), 200);
     }
 
-    public function show($id)
+    public function show($uniqueIdentifier)
     {
-        $loyaltyCard = LoyaltyCard::find($id);
-
+        // Find the loyalty card by UniqueIdentifier
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $uniqueIdentifier)->first();
+    
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
-
+    
         return response()->json($loyaltyCard, 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $uniqueIdentifier)
     {
-        $loyaltyCard = LoyaltyCard::find($id);
-
+        // Find the loyalty card by UniqueIdentifier
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $uniqueIdentifier)->first();
+    
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
-
+    
+        // Validate incoming data
         $validatedData = $request->validate([
             'FirstName' => 'sometimes|string',
             'LastName' => 'sometimes|string',
@@ -172,11 +175,13 @@ class LoyaltyCardsController extends Controller
             'ContactNo' => 'sometimes|string',
             'Points' => 'integer|min:0',
         ]);
-
+    
+        // Update the record
         $loyaltyCard->update($validatedData);
+    
         return response()->json($loyaltyCard, 200);
     }
-
+    
     public function destroy($id)
     {
         $loyaltyCard = LoyaltyCard::find($id);
