@@ -126,7 +126,7 @@ class LoyaltyCardsController extends Controller
         if ($useManualInput) {
             // Validate the manual input data
             $validatedData = $request->validate([
-                'manualLoyaltyCardID' => ['required', 'integer'],
+                'manualLoyaltyCardID' => ['required', 'string'],
                 'manualFirstname' => ['required', 'string', 'max:50'],
                 'manualLastname' => ['required', 'string', 'max:50'],
             ]);
@@ -134,24 +134,24 @@ class LoyaltyCardsController extends Controller
             $loyaltycardID = $validatedData['manualLoyaltyCardID'];
             $firstname = $validatedData['manualFirstname'];
             $lastname = $validatedData['manualLastname'];
+
+            // Retrieve member by LoyaltyCardID with case-insensitive matching
+            $loyaltycard = LoyaltyCard::where('UniqueIdentifier', $loyaltycardID)
+            ->whereRaw('LOWER(FirstName) = ?', [strtolower($firstname)])
+            ->whereRaw('LOWER(LastName) = ?', [strtolower($lastname)])
+            ->first();
         } else {
             // Validate the scanned data
             $validatedData = $request->validate([
-                'loyaltycardID' => ['required', 'integer'],
-                'firstname' => ['required', 'string', 'max:50'],
-                'lastname' => ['required', 'string', 'max:50'],
+                'loyaltycardID' => ['required', 'string'],
             ]);
 
             $loyaltycardID = $validatedData['loyaltycardID'];
-            $firstname = $validatedData['firstname'];
-            $lastname = $validatedData['lastname'];
-        }
 
-        // Retrieve member by LoyaltyCardID with case-insensitive matching
-        $loyaltycard = LoyaltyCard::where('LoyaltyCardID', $loyaltycardID)
-                            ->whereRaw('LOWER(FirstName) = ?', [strtolower($firstname)])
-                            ->whereRaw('LOWER(LastName) = ?', [strtolower($lastname)])
-                            ->first();
+            // Retrieve member by LoyaltyCardID with case-insensitive matching
+            $loyaltycard = LoyaltyCard::where('UniqueIdentifier', $loyaltycardID)
+            ->first();
+        }
 
         if ($loyaltycard) {
             // Fetch transactions from API using the LoyaltyCardID
@@ -161,14 +161,12 @@ class LoyaltyCardsController extends Controller
             if (empty($transactions)) {
                 return back()->with('error', 'No transactions found for this loyalty card.')
                             ->with('points', $loyaltycard->Points)
-                            ->with('memberName', "{$firstname} {$lastname}")
                             ->with('transactions', []);
             }
 
             // Pass data to the view
             return view('viewpoints', [
                 'points' => $loyaltycard->Points,
-                'memberName' => "{$firstname} {$lastname}",
                 'transactions' => $transactions
             ]);
         } else {
