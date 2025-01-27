@@ -28,7 +28,7 @@ class LoyaltyCardsController extends Controller
         ]);
 
         // Generate UniqueIdentifier manually
-        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(6));
+        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(5));
 
         // Create the new member using the validated data
         try {
@@ -42,11 +42,11 @@ class LoyaltyCardsController extends Controller
             ]);
 
             // Prepare the barcode content
-            $barcodeContent = strtoupper("{$newloyaltycard->LoyaltyCardID}-{$newloyaltycard->FirstName}-{$newloyaltycard->LastName}");
-            $barcodeContent = preg_replace('/[^A-Z0-9\-]/', '', $barcodeContent); // Ensure it only contains valid characters for C39
+            $barcodeContent = strtoupper("{$uniqueIdentifier}");
+            $barcodeContent = preg_replace('/[^A-Z0-9\-]/', '', $barcodeContent); // Ensure it only contains valid characters for C128
 
             // Generate the barcode with a transparent background
-            $barcode = DNS1D::getBarcodePNG($barcodeContent, 'C39', 2, 60, [0,0,0]);
+            $barcode = DNS1D::getBarcodePNG($barcodeContent, 'C128', 2, 60, [0,0,0]);
 
             // Convert the barcode image from base64 to a PHP image resource
             $barcodeImage = imagecreatefromstring(base64_decode($barcode));
@@ -64,7 +64,7 @@ class LoyaltyCardsController extends Controller
             imagecopy($backgroundImage, $barcodeImage, 0, 0, 0, 0, $width, $height);
 
             // Save the barcode image with a white background
-            $barcodePath = public_path("barcodes/{$newloyaltycard->LoyaltyCardID}.png");
+            $barcodePath = public_path("barcodes/{$uniqueIdentifier}.png");
             imagepng($backgroundImage, $barcodePath);  // Save the final image with a white background
 
             // Free up memory
@@ -73,8 +73,10 @@ class LoyaltyCardsController extends Controller
 
             // Success message
             return back()->with([
-                'success' => "Loyalty Card added successfully! LoyaltyCardID: {$newloyaltycard->LoyaltyCardID}",
-                'barcodePath' => "barcodes/{$newloyaltycard->LoyaltyCardID}.png",
+                'success' => "Loyalty Card added successfully!",
+                'barcodePath' => "barcodes/{$uniqueIdentifier}.png",
+                'uniqueIdentifier' => $uniqueIdentifier, // Pass the uniqueIdentifier to the session
+
             ]);
             
         } catch (\Exception $e) {
@@ -97,7 +99,7 @@ class LoyaltyCardsController extends Controller
         ]);
 
         // Generate UniqueIdentifier manually
-        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(6)); // Use Str::random()
+        $uniqueIdentifier = 'LID-' . $this->convertToUpper(Str::random(5)); // Use Str::random()
 
         // Create the loyalty card using validated data and the generated UniqueIdentifier
         $member = LoyaltyCard::create([
@@ -112,6 +114,66 @@ class LoyaltyCardsController extends Controller
 
         // Return the created loyalty card as a response
         return response()->json($member, 201);
+    }
+
+    public function viewPoints(Request $request)
+    {
+        // Check if manual input fields are being used
+        $useManualInput = $request->filled('manualLoyaltyCardID') &&
+                        $request->filled('manualFirstname') &&
+                        $request->filled('manualLastname');
+
+        if ($useManualInput) {
+            // Validate the manual input data
+            $validatedData = $request->validate([
+                'manualLoyaltyCardID' => ['required', 'string'],
+                'manualFirstname' => ['required', 'string', 'max:50'],
+                'manualLastname' => ['required', 'string', 'max:50'],
+            ]);
+
+            $loyaltycardID = $validatedData['manualLoyaltyCardID'];
+            $firstname = $validatedData['manualFirstname'];
+            $lastname = $validatedData['manualLastname'];
+
+            // Retrieve member by LoyaltyCardID with case-insensitive matching
+            $loyaltycard = LoyaltyCard::where('UniqueIdentifier', $loyaltycardID)
+            ->whereRaw('LOWER(FirstName) = ?', [strtolower($firstname)])
+            ->whereRaw('LOWER(LastName) = ?', [strtolower($lastname)])
+            ->first();
+        } else {
+            // Validate the scanned data
+            $validatedData = $request->validate([
+                'loyaltycardID' => ['required', 'string'],
+            ]);
+
+            $loyaltycardID = $validatedData['loyaltycardID'];
+
+            // Retrieve member by LoyaltyCardID with case-insensitive matching
+            $loyaltycard = LoyaltyCard::where('UniqueIdentifier', $loyaltycardID)
+            ->first();
+        }
+
+        if ($loyaltycard) {
+            // Fetch transactions from API using the LoyaltyCardID
+            $transactions = $this->fetchTransactionsFromApi($loyaltycardID);
+
+            // Check if the transactions are empty
+            if (empty($transactions)) {
+                return back()->with('error', 'No transactions found for this loyalty card.')
+                            ->with('points', $loyaltycard->Points)
+                            ->with('transactions', []);
+            }
+
+            // Pass data to the view
+            return view('viewpoints', [
+                'points' => $loyaltycard->Points,
+                'transactions' => $transactions
+            ]);
+        } else {
+            // Show error if member not found or information mismatch
+            // If the member is not found, reset everything
+            return back()->with('error', 'Member not found or information does not match.')->with('points', null)->with('transactions', []);
+        }
     }
 
     // Function to fetch transactions from the API
@@ -143,27 +205,28 @@ class LoyaltyCardsController extends Controller
         return response()->json(LoyaltyCard::all(), 200);
     }
 
-    public function show($id)
+    public function show($uniqueIdentifier)
     {
-        //$loyaltyCard = LoyaltyCard::find($id);
-        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $id)->first();
-
+        // Find the loyalty card by UniqueIdentifier
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $uniqueIdentifier)->first();
+    
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
-
+    
         return response()->json($loyaltyCard, 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $uniqueIdentifier)
     {
-        //$loyaltyCard = LoyaltyCard::find($id);
-        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $id)->first();
-
+        // Find the loyalty card by UniqueIdentifier
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $uniqueIdentifier)->first();
+    
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
         }
-
+    
+        // Validate incoming data
         $validatedData = $request->validate([
             'FirstName' => 'sometimes|string',
             'LastName' => 'sometimes|string',
@@ -172,15 +235,16 @@ class LoyaltyCardsController extends Controller
             'ContactNo' => 'sometimes|string',
             'Points' => 'integer|min:0',
         ]);
-
+    
+        // Update the record
         $loyaltyCard->update($validatedData);
+    
         return response()->json($loyaltyCard, 200);
     }
-
+    
     public function destroy($id)
     {
-        //$loyaltyCard = LoyaltyCard::find($id);
-        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $id)->first();
+        $loyaltyCard = LoyaltyCard::find($id);
 
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
