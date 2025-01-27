@@ -1,89 +1,139 @@
-/* General Reset */
-* {
+/* General reset and height */
+body, html {
+    height: 100%;
     margin: 0;
-    padding: 0;
-    box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
 
+/* Header styling */
 .main_header {
-    background-color: #2b4b2f;
-    color: #d6af68;
+    height: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.main_header_text{
+.main_header_text {
+    font-size: 2rem;
+    color: #333;
     text-align: center;
-    padding: 10px;
-    font-size: 50px;
-    font-weight: bold;
 }
 
-html, body {
-    height: 100%; /* Ensure the body and html take up full screen height */
-    margin: 0; /* Remove any default margin */
-}
-
-#main_container {
-    display: flex; /* Turn the container into a flex container */
-    flex-direction: column; /* Stack child elements vertically */
-    justify-content: center;  /* Center child elements vertically */
-    align-items: center;  /* Center child elements horizontally */
-    height: 100%; /* Take up full screen height */
-    text-align: center; /* Center text inside each child element */
-}
-
-.container {
-    margin: 10px; /* Space between each container (button) */
-}
-
-button {
-    padding: 20px 40px; /* Increased padding for larger buttons */
-    font-size: 18px; /* Larger font size */
-    cursor: pointer; /* Show pointer cursor on hover */
-    background-color: #2b4b2f; /* Background color */
-    color: #d6af68; /* Text color */
-    width: 500px; /* Fixed width */
-    height: 100px;
-    border-radius: 25px; /* Rounded corners */
-    border: none; /* Remove default border */
-    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
-}
-
-button:hover {
-    background-color: #3c703c; /* Darker background color when hovered */
-}
+.main_header .store_logo img {
+    max-width: 150px; /* Set a fixed max width */
+    height: auto;
+}   
 
 .back_button {
-    padding: 10px 20px; /* Smaller padding for the back button */
-    font-size: 14px; /* Smaller font size */
-    width: auto; /* Auto width */
-    height: auto; /* Auto height */
-    border-radius: 15px; /* Slightly rounded corners */
-    border: none; /* Remove default border */
-    background-color: #2b4b2f; /* Match background color */
-    color: #d6af68; /* Match text color */
-    position: absolute; /* Floating the button */
-    top: 10px; /* Adjust distance from the top */
-    left: 10px; /* Adjust distance from the right */
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 15px;
+    border: none;
+    background-color: #2b4b2f;
+    color: #d6af68;
+    position: absolute;
+    top: 10px;
+    left: 10px;
     cursor: pointer;
 }
 
 .back_button:hover {
-    background-color: #3c703c; /* Darker background color when hovered */
+    background-color: #3c703c;
 }
 
+/* Main container */
+#main_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    min-width: 100%;
+    background-color: #045a0f;
+    border-top-left-radius: 15%;
+    border-top-right-radius: 15%;
+    box-shadow: 0px -10px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Card styling */
+.card {
+    width: 30rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    background-color: #3c703c;
+    color: #fff;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 15px;
+}
+
+.card-body {
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+/* Input fields */
+.form-control {
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 1rem;
+    box-shadow: inset 0px 2px 5px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+}
+
+.form-control:focus {
+    border-color: #3c703c;
+    box-shadow: 0 0 5px rgba(60, 112, 60, 0.5);
+}
+
+/* Labels */
+.form-label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Submit button */
 .submit-button {
-    /* This will apply the Bootstrap's default btn styles */
-    width: auto; /* Let the button size adjust based on content */
-    height: auto; /* Let the button height adjust */
-    padding: 10px 20px; /* Apply padding as per Bootstrap */
-    font-size: 16px; /* Standard font size */
-    border-radius: 4px; /* Standard Bootstrap rounded corners */
-    background-color: #2b4b2f; /* Background color */
-    color: #d6af68; /* Text color */
-    border: none; /* No border */
+    width: 100%;
+    padding: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d6af68;
+    background-color: #2b4b2f;
+    border: none;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .submit-button:hover {
-    background-color: #3c703c; /* Darker background color when hovered */
+    background-color: #3c703c;
+    transform: scale(1.05);
+}
+
+/* Modal styling */
+.modal-content {
+    border-radius: 15px;
+}
+
+.modal-header {
+    background-color: #3c703c;
+    color: #fff;
+    border-bottom: none;
+}
+
+.modal-footer .btn-primary {
+    background-color: #2b4b2f;
+    border: none;
+    border-radius: 20px;
+    color: #d6af68;
+}
+
+.modal-footer .btn-primary:hover {
+    background-color: #3c703c;
 }

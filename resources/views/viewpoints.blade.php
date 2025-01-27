@@ -9,8 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         #scanner-container {
-            width: 300px;
-            height: 200px;
+            width: 100%;
+            height: 400px;
             overflow: hidden;
             position: relative;
             border: 1px solid #ccc;
@@ -36,24 +36,28 @@
 </head>
 <body>
     {{-- Header --}}
-    <div class="main_header">
-        <a href="/">
-            <button class="back_button">Back</button>
-        </a>
+    <div class="main_header d-flex flex-column justify-content-center align-items-center">
+        <div class="store_logo">
+            <img src="Picture/StoreLogo.png" alt="Store Logo" class="img-fluid">
+        </div>
         <h1 class="main_header_text">Dipensa Teknolohiya Grocery</h1>
     </div>
 
-    <div class="container mt-4">
+    <a href="/">
+        <button class="back_button">Back</button>
+    </a>
+
+    <div class="container mt-4" id="main_container">
         <div class="row">
             {{-- Camera and Barcode Scanner --}}
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div id="scanner-container">
                     <div id="video-preview"></div>
                 </div>
             </div>
 
             {{-- Form to View Loyalty Card Points --}}
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
                         View Loyalty Card Points
@@ -89,7 +93,7 @@
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-primary submit-button">View Points</button>
+                            <button type="submit" class="submit-button">View Points</button>
                         </div>
                     </form>
                 </div>

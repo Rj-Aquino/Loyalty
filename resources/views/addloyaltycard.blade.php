@@ -12,14 +12,19 @@
 <body>
 
     {{-- Header --}}
-    <div class="main_header">
-        <a href="/">
-            <button class="back_button">Back</button>
-        </a>
+
+    <div class="main_header d-flex flex-column justify-content-center align-items-center">
+        <div class="store_logo">
+            <img src="Picture/StoreLogo.png" alt="Store Logo" class="img-fluid">
+        </div>
         <h1 class="main_header_text">Dipensa Teknolohiya Grocery</h1>
     </div>
 
-    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <a href="/">
+        <button class="back_button">Back</button>
+    </a>
+
+    <div class="container d-flex justify-content-center align-items-center" id="main_container" style="min-height: 80vh;">
         <div class="card" style="width: 30rem;">
             <div class="card-header text-center">
                 Add New Loyalty Card

@@ -11,7 +11,6 @@ body, html {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: #f8f9fa;
 }
 
 .main_header .store_logo img {
