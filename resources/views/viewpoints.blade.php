@@ -9,8 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         #scanner-container {
-            width: 300px;
-            height: 200px;
+            width: 100%;
+            height: 400px;
             overflow: hidden;
             position: relative;
             border: 1px solid #ccc;
@@ -36,24 +36,28 @@
 </head>
 <body>
     {{-- Header --}}
-    <div class="main_header">
-        <a href="/">
-            <button class="back_button">Back</button>
-        </a>
+    <div class="main_header d-flex flex-column justify-content-center align-items-center">
+        <div class="store_logo">
+            <img src="Picture/StoreLogo.png" alt="Store Logo" class="img-fluid">
+        </div>
         <h1 class="main_header_text">Dipensa Teknolohiya Grocery</h1>
     </div>
 
-    <div class="container mt-4">
+    <a href="/">
+        <button class="back_button">Back</button>
+    </a>
+
+    <div class="container mt-4" id="main_container">
         <div class="row">
             {{-- Camera and Barcode Scanner --}}
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div id="scanner-container">
                     <div id="video-preview"></div>
                 </div>
             </div>
 
             {{-- Form to View Loyalty Card Points --}}
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
                         View Loyalty Card Points
@@ -63,35 +67,33 @@
                         <div class="card-body">
                             <!-- Hidden Inputs for barcode scanning -->
                             <input type="hidden" id="loyaltycardID" name="loyaltycardID">
-                            <input type="hidden" id="firstname" name="firstname">
-                            <input type="hidden" id="lastname" name="lastname">
 
                             <!-- Manual Inputs -->
                             <div class="mb-3">
-                                <label for="manualLoyaltyCardID" class="form-label">Loyalty Card ID</label>
-                                <input type="text" class="form-control" id="manualLoyaltyCardID" name="manualLoyaltyCardID" placeholder="Enter Loyalty Card ID" value="{{ old('manualLoyaltyCardID') }}">
+                                <label for="manualLoyaltyCardID" class="form-label">Loyalty Card UID <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="manualLoyaltyCardID" name="manualLoyaltyCardID" placeholder="Enter Loyalty Card ID" value="{{ old('manualLoyaltyCardID') }}" required>
                                 @error('manualLoyaltyCardID')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="mb-3">
-                                <label for="manualFirstname" class="form-label">First Name</label>
-                                <input type="text" class="form-control" id="manualFirstname" name="manualFirstname" placeholder="Enter First Name" value="{{ old('manualFirstname') }}">
+                                <label for="manualFirstname" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="manualFirstname" name="manualFirstname" placeholder="Enter First Name" value="{{ old('manualFirstname') }}" required>
                                 @error('manualFirstname')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
 
                             <div class="mb-3">
-                                <label for="manualLastname" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" id="manualLastname" name="manualLastname" placeholder="Enter Last Name" value="{{ old('manualLastname') }}">
+                                <label for="manualLastname" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="manualLastname" name="manualLastname" placeholder="Enter Last Name" value="{{ old('manualLastname') }}" required>
                                 @error('manualLastname')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
 
-                            <button type="submit" class="btn btn-primary submit-button">View Points</button>
+                            <button type="submit" class="submit-button">View Points</button>
                         </div>
                     </form>
                 </div>
@@ -143,9 +145,9 @@
                                 <tbody>
                                     @foreach ($transactions as $transaction)
                                         <tr>
-                                            <td>{{ $transaction['TransactionID'] }}</td>
-                                            <td>{{ $transaction['OrderID'] }}</td>
-                                            <td>{{ $transaction['UserID'] }}</td>
+                                            <td>{{ $transaction['TransactionUniqueIdentifier'] }}</td>
+                                            <td>{{ $transaction['OrderUniqueIdentifier'] }}</td>
+                                            <td>{{ $transaction['UserUniqueIdentifier'] }}</td>
                                             <td>{{ $transaction['TotalPointsUsed'] }}</td>
                                             <td>{{ $transaction['PointsEarned'] }}</td>
                                             <td>{{ $transaction['TransactionDate'] }}</td>
@@ -202,15 +204,8 @@
             const barcode = data.codeResult.code;
             console.log("Barcode detected:", barcode);
 
-            const parts = barcode.split("-");
-            if (parts.length === 3) {
-                document.getElementById("loyaltycardID").value = parts[0];
-                document.getElementById("firstname").value = parts[1];
-                document.getElementById("lastname").value = parts[2];
-                document.getElementById("viewPointsForm").submit();
-            } else {
-                console.error("Invalid barcode format.");
-            }
+            document.getElementById("loyaltycardID").value = barcode;
+            document.getElementById("viewPointsForm").submit();
         });
     </script>
 </body>

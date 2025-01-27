@@ -5,20 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Add Loyalty Card</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/addloyalty.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 <body>
 
     {{-- Header --}}
-    <div class="main_header">
-        <a href="/">
-            <button class="back_button">Back</button>
-        </a>
+
+    <div class="main_header d-flex flex-column justify-content-center align-items-center">
+        <div class="store_logo">
+            <img src="Picture/StoreLogo.png" alt="Store Logo" class="img-fluid">
+        </div>
         <h1 class="main_header_text">Dipensa Teknolohiya Grocery</h1>
     </div>
 
-    <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <a href="/">
+        <button class="back_button">Back</button>
+    </a>
+
+    <div class="container d-flex justify-content-center align-items-center" id="main_container" style="min-height: 80vh;">
         <div class="card" style="width: 30rem;">
             <div class="card-header text-center">
                 Add New Loyalty Card
@@ -49,20 +55,31 @@
                     </div>
                     <div class="mb-3">
                         <label for="suffix" class="form-label">Suffix (Optional)</label>
-                        <input type="text" class="form-control" id="suffix" name="suffix" placeholder="Enter Suffix" value="{{ old('suffix') }}" maxlength="5">
+                        <select name="suffix" id="suffix" class="form-control">
+                            <option value="" style="color:gray;">None</option>
+                            <option value="Sr.">Sr.</option>
+                            <option value="Jr.">Jr.</option>
+                            <option value="I">I</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                            <option value="V">V</option>
+                            <option value="VI">VI</option>
+                        </select>
                         @error('suffix')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="contact_number" class="form-label">Contact Number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter Contact Number" value="{{ old('contact_number') }}" pattern="^09\d{9}$" required>
+                        <label for="contact_number" class="form-label mb-0">Contact Number <span class="text-danger">*</span></label><br>
+                        <small style="color:gray;">(09XXXXXXXXX)</small>
+                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter Contact Number" value="{{ old('contact_number') }}" pattern="^09\d{9}$" maxlength="11" required>
                         @error('contact_number')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-primary submit-button">Add Loyalty Card</button>
+                    <button type="submit" class="btn-primary submit-button">Add Loyalty Card</button>
                 </div>
             </form>
         </div>
@@ -92,9 +109,16 @@
                                 <img src="{{ asset(session('barcodePath')) }}" alt="Generated Barcode" class="img-fluid">
                             </div>
                         @endif
+
+                        @if (session('barcodePath'))
+                            <a href="{{ session('barcodePath') }}" download="{{ session('uniqueIdentifier') }}.png" class="btn btn-primary mt-4">
+                                <i class="fas fa-download"></i> Download Barcode
+                            </a>
+                        @endif
+
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn-primary mt-2" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -117,6 +141,26 @@
             });
             myModal.show();
         @endif
+        
+        document.getElementById('suffix').addEventListener('change', dropdownColor);
+        dropdownColor();
+
+        function dropdownColor() {
+        var suffixDropdown = document.getElementById('suffix');
+        var options = suffixDropdown.options;
+        for (var i = 0; i < options.length; i++) {
+            if (options[i].value === '') {
+                options[i].style.color = 'gray';
+            } else {
+                options[i].style.color = 'black';
+            }
+        }
+        if (suffixDropdown.value === '') {
+            suffixDropdown.style.color = 'gray';
+        } else {
+            suffixDropdown.style.color = 'black';
+        }
+    }
     </script>
 </body>
 </html>
