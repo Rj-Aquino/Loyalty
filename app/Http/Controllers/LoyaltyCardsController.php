@@ -145,7 +145,8 @@ class LoyaltyCardsController extends Controller
 
     public function show($id)
     {
-        $loyaltyCard = LoyaltyCard::find($id);
+        //$loyaltyCard = LoyaltyCard::find($id);
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $id)->first();
 
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
@@ -156,7 +157,8 @@ class LoyaltyCardsController extends Controller
 
     public function update(Request $request, $id)
     {
-        $loyaltyCard = LoyaltyCard::find($id);
+        //$loyaltyCard = LoyaltyCard::find($id);
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $id)->first();
 
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
@@ -177,7 +179,8 @@ class LoyaltyCardsController extends Controller
 
     public function destroy($id)
     {
-        $loyaltyCard = LoyaltyCard::find($id);
+        //$loyaltyCard = LoyaltyCard::find($id);
+        $loyaltyCard = LoyaltyCard::where('UniqueIdentifier', $id)->first();
 
         if (!$loyaltyCard) {
             return response()->json(['error' => 'Loyalty Card not found'], 404);
